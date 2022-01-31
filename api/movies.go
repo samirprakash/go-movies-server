@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"errors"
@@ -8,15 +8,16 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/samirprakash/go-movies-server/internals/models"
+	"github.com/samirprakash/go-movies-server/internals/utils"
 )
 
-func (app *application) getOneMovie(w http.ResponseWriter, r *http.Request){
+func (s *Server) getOneMovie(w http.ResponseWriter, r *http.Request){
 	params := httprouter.ParamsFromContext(r.Context())
 
 	id, err := strconv.Atoi(params.ByName("id"))
 	if err != nil {
-		app.logger.Println(errors.New("invalid movie id : "), err)
-		app.errorJSON(w, err)
+		s.logger.Println(errors.New("invalid movie id : "), err)
+		utils.ErrorJSON(w, err)
 		return
 	}
 
@@ -33,9 +34,9 @@ func (app *application) getOneMovie(w http.ResponseWriter, r *http.Request){
 		UpdatedAt:   time.Now(),
 	}
 
-	app.writeJSON(w, http.StatusOK, movie, "movie")
+	utils.WriteJSON(w, http.StatusOK, movie, "movie")
 }
 
-func (app *application) getAllMovies(w http.ResponseWriter, r *http.Request){
+func (s *Server) getAllMovies(w http.ResponseWriter, r *http.Request){
 
 }
