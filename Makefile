@@ -1,2 +1,6 @@
+tidy:
+	go mod tidy
+	go mod vendor
+	
 server:
-	go run cmd/api/main.go
+	go run cmd/api/*.go
