@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (app *application) statusHandler (w http.ResponseWriter, r *http.Request){
+func (app *application) getStatus(w http.ResponseWriter, r *http.Request){
 	s := AppStatus{
 		Status:      "Available",
 		Environment: app.config.env,
@@ -14,10 +14,8 @@ func (app *application) statusHandler (w http.ResponseWriter, r *http.Request){
 
 	j, err := json.MarshalIndent(s, "", "\t")
 	if err != nil {
-		app.logger.Println("not able to marshal current statius", err)
+		app.logger.Println("not able to marshal current status", err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(j)
+	app.writeJSON(w, http.StatusOK, j, "status")
 }
