@@ -1,12 +1,16 @@
 package api
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/samirprakash/go-movies-server/internals/config"
+
+	_ "github.com/lib/pq"
 )
 
 type Server struct {
@@ -21,6 +25,23 @@ func NewServer(config config.Config, logger *log.Logger) *Server{
 	}
 
 	return s
+}
+
+func (s *Server) OpenDB() (*sql.DB, error) {
+	db, err := sql.Open("postgres", s.config.DB.DSN)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = db.PingContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }
 
 func (s *Server) Start() error{
