@@ -1,5 +1,7 @@
 # Go Watch a Movie
 
+[![Build and Test](https://github.com/samirprakash/go-movies-server/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/samirprakash/go-movies-server/actions/workflows/build.yaml)
+
 Backend server for go-movies application
 
 #### Database setup
