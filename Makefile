@@ -14,6 +14,7 @@ cleanpostgres:
 	docker rm -f go-movies-postgres
 
 tidy:
+	go fmt
 	go mod tidy
 	go mod vendor
 	

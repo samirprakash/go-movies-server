@@ -14,7 +14,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func main(){
+func main() {
 	var c config.Config
 
 	flag.IntVar(&c.Port, "port", 4000, "port to start the server")
@@ -29,7 +29,7 @@ func main(){
 		l.Fatal("cannot connect to database")
 	}
 	defer db.Close()
-	
+
 	s := api.NewServer(c, l, db)
 
 	err = s.Start()
