@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	"github.com/samirprakash/go-movies-server/internals/config"
+	"github.com/samirprakash/go-movies-server/internals/models"
 
 	_ "github.com/lib/pq"
 )
@@ -16,32 +16,17 @@ import (
 type Server struct {
 	config config.Config
 	logger *log.Logger
+	models models.Models
 }
 
-func NewServer(config config.Config, logger *log.Logger) *Server{
+func NewServer(config config.Config, logger *log.Logger, db *sql.DB) *Server{
 	s := &Server{
 		config: config,
 		logger: logger,
+		models: models.NewModels(db),
 	}
 
 	return s
-}
-
-func (s *Server) OpenDB() (*sql.DB, error) {
-	db, err := sql.Open("postgres", s.config.DB.DSN)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err = db.PingContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }
 
 func (s *Server) Start() error{
