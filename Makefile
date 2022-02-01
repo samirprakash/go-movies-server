@@ -18,7 +18,10 @@ tidy:
 	go mod tidy
 	go mod vendor
 	
-build: tidy
+test: tidy
+	go test -v ./...
+
+build: test
 	go build -o build/go-movies main.go
 
 server:
