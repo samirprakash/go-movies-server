@@ -27,4 +27,7 @@ build: test
 server:
 	go run main.go
 
+dev:
+	air
+
 .PHONY: postgres createdb populatedb cleanpostgres db tidy build server
