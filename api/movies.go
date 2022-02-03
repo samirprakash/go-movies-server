@@ -49,3 +49,28 @@ func (s *Server) getMovies(w http.ResponseWriter, r *http.Request){
 		return
 	}
 }
+
+func (s *Server) getMoviesByGenre(w http.ResponseWriter, r *http.Request){
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		s.logger.Println(errors.New("invalid movie id : "), err)
+		utils.ErrorJSON(w, err)
+		return
+	}
+
+	movies, err := s.models.DB.GetMovies(id)
+	if err != nil {
+		s.logger.Println("error reading movies from the database")
+		utils.ErrorJSON(w, err)
+		return
+	}
+
+	err = utils.WriteJSON(w, http.StatusOK, movies, "movies")
+	if err != nil {
+		s.logger.Println("error writing movies to response")
+		utils.ErrorJSON(w, err)
+		return
+	}
+}

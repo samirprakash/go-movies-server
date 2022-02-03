@@ -13,6 +13,7 @@ func (s *Server) routes() http.Handler {
 	r.HandlerFunc(http.MethodGet, "/v1/movies/:id", s.getMovie)
 	r.HandlerFunc(http.MethodGet, "/v1/movies", s.getMovies)
 	r.HandlerFunc(http.MethodGet, "/v1/genres", s.getGenres)
+	r.HandlerFunc(http.MethodGet, "/v1/genres/:id/movies", s.getMoviesByGenre)
 
 	return s.enableCORS(r)
 }
