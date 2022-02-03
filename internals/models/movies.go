@@ -11,7 +11,7 @@ type DBModel struct {
 	DB *sql.DB
 }
 
-func (m *DBModel) GetOne(id int) (*Movie, error) {
+func (m *DBModel) GetMovie(id int) (*Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -61,7 +61,7 @@ func (m *DBModel) GetOne(id int) (*Movie, error) {
 	return &movie, nil
 }
 
-func (m *DBModel) GetAll() ([]*Movie, error){
+func (m *DBModel) GetMovies() ([]*Movie, error){
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 

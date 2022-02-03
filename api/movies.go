@@ -9,7 +9,7 @@ import (
 	"github.com/samirprakash/go-movies-server/internals/utils"
 )
 
-func (s *Server) getOneMovie(w http.ResponseWriter, r *http.Request){
+func (s *Server) getMovie(w http.ResponseWriter, r *http.Request){
 	params := httprouter.ParamsFromContext(r.Context())
 
 	id, err := strconv.Atoi(params.ByName("id"))
@@ -19,7 +19,7 @@ func (s *Server) getOneMovie(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	movie, err := s.models.DB.GetOne(id)
+	movie, err := s.models.DB.GetMovie(id)
 	if err != nil {
 		s.logger.Println("no movie found in the database")
 		utils.ErrorJSON(w, err)
@@ -34,8 +34,8 @@ func (s *Server) getOneMovie(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func (s *Server) getAllMovies(w http.ResponseWriter, r *http.Request){
-	movies, err := s.models.DB.GetAll()
+func (s *Server) getMovies(w http.ResponseWriter, r *http.Request){
+	movies, err := s.models.DB.GetMovies()
 	if err != nil {
 		s.logger.Println("error reading movies from the database")
 		utils.ErrorJSON(w, err)
@@ -44,7 +44,7 @@ func (s *Server) getAllMovies(w http.ResponseWriter, r *http.Request){
 
 	err = utils.WriteJSON(w, http.StatusOK, movies, "movies")
 	if err != nil {
-		s.logger.Println("error writing movie to response")
+		s.logger.Println("error writing movies to response")
 		utils.ErrorJSON(w, err)
 		return
 	}
