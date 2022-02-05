@@ -74,3 +74,19 @@ func (s *Server) getMoviesByGenre(w http.ResponseWriter, r *http.Request){
 		return
 	}
 }
+
+func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request){
+	type jr struct {
+		OK bool `json:"ok"`
+	}
+
+	ok := jr{
+		OK: true,
+	}
+
+	err := utils.WriteJSON(w, http.StatusOK, ok, "response")
+	if err != nil {
+		utils.ErrorJSON(w, err)
+		return
+	}
+}
