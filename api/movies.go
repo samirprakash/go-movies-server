@@ -1,15 +1,24 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/samirprakash/go-movies-server/internals/models"
 	"github.com/samirprakash/go-movies-server/internals/utils"
 )
 
-func (s *Server) getMovie(w http.ResponseWriter, r *http.Request){
+type jr struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+func (s *Server) getMovie(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 
 	id, err := strconv.Atoi(params.ByName("id"))
@@ -34,7 +43,7 @@ func (s *Server) getMovie(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func (s *Server) getMovies(w http.ResponseWriter, r *http.Request){
+func (s *Server) getMovies(w http.ResponseWriter, r *http.Request) {
 	movies, err := s.models.DB.GetMovies()
 	if err != nil {
 		s.logger.Println("error reading movies from the database")
@@ -50,7 +59,7 @@ func (s *Server) getMovies(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func (s *Server) getMoviesByGenre(w http.ResponseWriter, r *http.Request){
+func (s *Server) getMoviesByGenre(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 
 	id, err := strconv.Atoi(params.ByName("id"))
@@ -75,16 +84,67 @@ func (s *Server) getMoviesByGenre(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request){
-	type jr struct {
-		OK bool `json:"ok"`
+type manageMovieRequestParams struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Year        string `json:"year"`
+	ReleaseDate string `json:"release_date"`
+	Runtime     string `json:"runtime"`
+	Rating      string `json:"rating"`
+	MPAARating  string `json:"mpaa_rating"`
+}
+
+func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
+	var req manageMovieRequestParams
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.ErrorJSON(w, err)
+		return
+	}
+
+	var movie models.Movie
+	movie.ID, err = strconv.Atoi(req.ID)
+	if err != nil {
+		log.Println(err)
+		utils.ErrorJSON(w, err)
+		return
+	}
+	movie.Title = req.Title
+	movie.Description = req.Description
+	movie.ReleaseDate, err = time.Parse("2006-01-02", req.ReleaseDate)
+	if err != nil {
+		log.Println(err)
+		utils.ErrorJSON(w, err)
+		return
+	}
+	movie.Year = movie.ReleaseDate.Year()
+	movie.Runtime, err = strconv.Atoi(req.Runtime)
+	if err != nil {
+		utils.ErrorJSON(w, err)
+		return
+	}
+	movie.Rating, err = strconv.Atoi(req.Rating)
+	if err != nil {
+		utils.ErrorJSON(w, err)
+		return
+	}
+	movie.MPAARating = req.MPAARating
+	movie.CreatedAt = time.Now()
+	movie.UpdatedAt = time.Now()
+
+	err = s.models.DB.InsertMovie(movie)
+	if err != nil {
+		utils.ErrorJSON(w, err)
+		return
 	}
 
 	ok := jr{
 		OK: true,
 	}
 
-	err := utils.WriteJSON(w, http.StatusOK, ok, "response")
+	err = utils.WriteJSON(w, http.StatusOK, ok, "response")
 	if err != nil {
 		utils.ErrorJSON(w, err)
 		return

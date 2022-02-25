@@ -21,7 +21,7 @@ func (m *DBModel) GetMovie(id int) (*Movie, error) {
 	row := m.DB.QueryRowContext(ctx, query, id)
 
 	var movie Movie
-	err := row.Scan(&movie.ID, &movie.Title, &movie.Description, &movie.Year, &movie.ReleaseDate, &movie.Runtime, &movie.Rating, &movie.MPAARating, &movie. CreatedAt, &movie.UpdatedAt)
+	err := row.Scan(&movie.ID, &movie.Title, &movie.Description, &movie.Year, &movie.ReleaseDate, &movie.Runtime, &movie.Rating, &movie.MPAARating, &movie.CreatedAt, &movie.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (m *DBModel) GetMovie(id int) (*Movie, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	genres := make(map[int]string)
 	for rows.Next() {
 		var mg MovieGenre
@@ -62,12 +62,12 @@ func (m *DBModel) GetMovie(id int) (*Movie, error) {
 	return &movie, nil
 }
 
-func (m *DBModel) GetMovies(genre ...int) ([]*Movie, error){
+func (m *DBModel) GetMovies(genre ...int) ([]*Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	where := ""
-	if len(genre) >0 {
+	if len(genre) > 0 {
 		where = fmt.Sprintf("where id in (select movie_id from movies_genres where genre_id = %d)", genre[0])
 	}
 
@@ -82,15 +82,15 @@ func (m *DBModel) GetMovies(genre ...int) ([]*Movie, error){
 	for rows.Next() {
 		var movie Movie
 		err := rows.Scan(
-			&movie.ID, 
-			&movie.Title, 
-			&movie.Description, 
-			&movie.Year, 
+			&movie.ID,
+			&movie.Title,
+			&movie.Description,
+			&movie.Year,
 			&movie.ReleaseDate,
-			&movie.Runtime, 
-			&movie.Rating, 
-			&movie.MPAARating, 
-			&movie.CreatedAt, 
+			&movie.Runtime,
+			&movie.Rating,
+			&movie.MPAARating,
+			&movie.CreatedAt,
 			&movie.UpdatedAt,
 		)
 		if err != nil {
@@ -133,4 +133,32 @@ func (m *DBModel) GetMovies(genre ...int) ([]*Movie, error){
 	}
 
 	return movies, nil
+}
+
+func (m *DBModel) InsertMovie(movie Movie) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `insert into movies 
+				(title, description, year, release_date, runtime, rating, mpaa_rating, created_at, updated_at) 
+				values 
+				($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		movie.Title,
+		movie.Description,
+		movie.Year,
+		movie.ReleaseDate,
+		movie.Runtime,
+		movie.Rating,
+		movie.MPAARating,
+		movie.CreatedAt,
+		movie.UpdatedAt,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
