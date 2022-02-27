@@ -51,7 +51,7 @@ func (s *Server) Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var claims jwt.Claims
-	claims.Subject = fmt.Sprintf(user.Email)
+	claims.Subject = fmt.Sprint(user.ID)
 	claims.Issued = jwt.NewNumericTime(time.Now())
 	claims.NotBefore = jwt.NewNumericTime(time.Now())
 	claims.Expires = jwt.NewNumericTime(time.Now().Add(24 * time.Hour))
