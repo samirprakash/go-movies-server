@@ -180,3 +180,30 @@ func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) deleteMovie(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		s.logger.Println(errors.New("invalid movie id : "), err)
+		utils.ErrorJSON(w, err)
+		return
+	}
+
+	err = s.models.DB.DeleteMovie(id)
+	if err != nil {
+		s.logger.Println(errors.New("error deleting movie: "), err)
+		utils.ErrorJSON(w, err)
+		return
+	}
+
+	ok := jr{OK: true}
+
+	err = utils.WriteJSON(w, http.StatusOK, ok, "response")
+	if err != nil {
+		s.logger.Println(errors.New("error sending response while deleting a movie: "), err)
+		utils.ErrorJSON(w, err)
+		return
+	}
+}
