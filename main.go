@@ -20,6 +20,7 @@ func main() {
 	flag.IntVar(&c.Port, "port", 4000, "port to start the server")
 	flag.StringVar(&c.Env, "env", "development", "application environment (development|production")
 	flag.StringVar(&c.DB.DSN, "dsn", "postgres://root:secret@localhost:5432/go_movies?sslmode=disable", "postgres connection string")
+	flag.StringVar(&c.Jwt.Secret, "jwt-secret", "mysupersecuresecret", "JWT Token secret")
 	flag.Parse()
 
 	l := log.New(os.Stdout, "", log.Ldate|log.Ltime)
