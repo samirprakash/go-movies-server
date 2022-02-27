@@ -64,7 +64,7 @@ func (s *Server) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.WriteJSON(w, http.StatusOK, jwtBytes, "response")
+	err = utils.WriteJSON(w, http.StatusOK, string(jwtBytes), "response")
 	if err != nil {
 		utils.ErrorJSON(w, errors.New("error sending signin response"))
 		return
