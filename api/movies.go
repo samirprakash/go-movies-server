@@ -105,6 +105,24 @@ func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var movie models.Movie
+
+	if req.ID != "0" {
+		id, err := strconv.Atoi(req.ID)
+		if err != nil {
+			log.Println(err)
+			utils.ErrorJSON(w, err)
+			return
+		}
+		m, err := s.models.DB.GetMovie(id)
+		if err != nil {
+			log.Println(err)
+			utils.ErrorJSON(w, err)
+			return
+		}
+		movie = *m
+		movie.UpdatedAt = time.Now()
+	}
+
 	movie.ID, err = strconv.Atoi(req.ID)
 	if err != nil {
 		log.Println(err)
@@ -122,11 +140,13 @@ func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
 	movie.Year = movie.ReleaseDate.Year()
 	movie.Runtime, err = strconv.Atoi(req.Runtime)
 	if err != nil {
+		log.Println(err)
 		utils.ErrorJSON(w, err)
 		return
 	}
 	movie.Rating, err = strconv.Atoi(req.Rating)
 	if err != nil {
+		log.Println(err)
 		utils.ErrorJSON(w, err)
 		return
 	}
@@ -134,10 +154,20 @@ func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
 	movie.CreatedAt = time.Now()
 	movie.UpdatedAt = time.Now()
 
-	err = s.models.DB.InsertMovie(movie)
-	if err != nil {
-		utils.ErrorJSON(w, err)
-		return
+	if movie.ID == 0 {
+		err = s.models.DB.InsertMovie(movie)
+		if err != nil {
+			log.Println(err)
+			utils.ErrorJSON(w, err)
+			return
+		}
+	} else {
+		err = s.models.DB.UpdateMovie(movie)
+		if err != nil {
+			log.Println(err)
+			utils.ErrorJSON(w, err)
+			return
+		}
 	}
 
 	ok := jr{
