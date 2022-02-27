@@ -9,7 +9,7 @@ import (
 func (s *Server) routes() http.Handler {
 	r := httprouter.New()
 
-	r.HandlerFunc(http.MethodGet, "/v1/signin", s.Signin)
+	r.HandlerFunc(http.MethodPost, "/v1/signin", s.Signin)
 	r.HandlerFunc(http.MethodGet, "/status", s.getStatus)
 	r.HandlerFunc(http.MethodGet, "/v1/movies/:id", s.getMovie)
 	r.HandlerFunc(http.MethodDelete, "/v1/movies/:id", s.deleteMovie)
