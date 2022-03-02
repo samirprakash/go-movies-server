@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func WriteJSON(w http.ResponseWriter, status int, data interface{}, wrap string) error{
+func WriteJSON(w http.ResponseWriter, status int, data interface{}, wrap string) error {
 	wrapper := make(map[string]interface{})
 
 	wrapper[wrap] = data
@@ -22,7 +22,12 @@ func WriteJSON(w http.ResponseWriter, status int, data interface{}, wrap string)
 	return nil
 }
 
-func ErrorJSON(w http.ResponseWriter, err error){
+func ErrorJSON(w http.ResponseWriter, err error, status ...int) {
+	statusCode := http.StatusBadRequest
+	if len(status) > 0 {
+		statusCode = status[0]
+	}
+
 	type je struct {
 		Message string `json:"message"`
 	}
@@ -31,5 +36,5 @@ func ErrorJSON(w http.ResponseWriter, err error){
 		Message: err.Error(),
 	}
 
-	WriteJSON(w, http.StatusBadRequest, te, "error")
+	WriteJSON(w, statusCode, te, "error")
 }

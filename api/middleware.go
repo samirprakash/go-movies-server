@@ -44,28 +44,28 @@ func (s *Server) checkToken(next http.Handler) http.Handler {
 
 		claims, err := jwt.HMACCheck([]byte(token), []byte(s.config.Jwt.Secret))
 		if err != nil {
-			utils.ErrorJSON(w, errors.New("cannot check with HMACCheck"))
+			utils.ErrorJSON(w, errors.New("cannot check with HMACCheck"), http.StatusForbidden)
 			return
 		}
 
 		if !claims.Valid(time.Now()) {
-			utils.ErrorJSON(w, errors.New("unauthorized - token expired"))
+			utils.ErrorJSON(w, errors.New("unauthorized - token expired"), http.StatusForbidden)
 			return
 		}
 
 		if !claims.AcceptAudience("mydomain.com") {
-			utils.ErrorJSON(w, errors.New("unauthorized - invalid audience"))
+			utils.ErrorJSON(w, errors.New("unauthorized - invalid audience"), http.StatusForbidden)
 			return
 		}
 
 		if claims.Issuer != "mydomain.com" {
-			utils.ErrorJSON(w, errors.New("unauthorized - invalid issuer"))
+			utils.ErrorJSON(w, errors.New("unauthorized - invalid issuer"), http.StatusForbidden)
 			return
 		}
 
 		userID, err := strconv.ParseInt(claims.Subject, 10, 64)
 		if err != nil {
-			utils.ErrorJSON(w, errors.New("unauthoried - cannot parse user ID"))
+			utils.ErrorJSON(w, errors.New("unauthoried - cannot parse user ID"), http.StatusForbidden)
 			return
 		}
 

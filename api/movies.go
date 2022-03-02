@@ -31,14 +31,14 @@ func (s *Server) getMovie(w http.ResponseWriter, r *http.Request) {
 	movie, err := s.models.DB.GetMovie(id)
 	if err != nil {
 		s.logger.Println("no movie found in the database")
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusNotFound)
 		return
 	}
 
 	err = utils.WriteJSON(w, http.StatusOK, movie, "movie")
 	if err != nil {
 		s.logger.Println("error writing movie to response")
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 }
@@ -47,14 +47,14 @@ func (s *Server) getMovies(w http.ResponseWriter, r *http.Request) {
 	movies, err := s.models.DB.GetMovies()
 	if err != nil {
 		s.logger.Println("error reading movies from the database")
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	err = utils.WriteJSON(w, http.StatusOK, movies, "movies")
 	if err != nil {
 		s.logger.Println("error writing movies to response")
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 }
@@ -72,14 +72,14 @@ func (s *Server) getMoviesByGenre(w http.ResponseWriter, r *http.Request) {
 	movies, err := s.models.DB.GetMovies(id)
 	if err != nil {
 		s.logger.Println("error reading movies from the database")
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	err = utils.WriteJSON(w, http.StatusOK, movies, "movies")
 	if err != nil {
 		s.logger.Println("error writing movies to response")
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 }
@@ -116,7 +116,7 @@ func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
 		m, err := s.models.DB.GetMovie(id)
 		if err != nil {
 			log.Println(err)
-			utils.ErrorJSON(w, err)
+			utils.ErrorJSON(w, err, http.StatusNotFound)
 			return
 		}
 		movie = *m
@@ -203,7 +203,7 @@ func (s *Server) deleteMovie(w http.ResponseWriter, r *http.Request) {
 	err = utils.WriteJSON(w, http.StatusOK, ok, "response")
 	if err != nil {
 		s.logger.Println(errors.New("error sending response while deleting a movie: "), err)
-		utils.ErrorJSON(w, err)
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
 	}
 }

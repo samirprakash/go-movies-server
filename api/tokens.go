@@ -39,14 +39,14 @@ func (s *Server) Signin(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
-		utils.ErrorJSON(w, errors.New("unauthorized"))
+		utils.ErrorJSON(w, errors.New("unauthorized"), http.StatusForbidden)
 		return
 	}
 
 	hashedPassword := user.Password
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(creds.Password))
 	if err != nil {
-		utils.ErrorJSON(w, errors.New("unauthorized"))
+		utils.ErrorJSON(w, errors.New("unauthorized"), http.StatusForbidden)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (s *Server) Signin(w http.ResponseWriter, r *http.Request) {
 
 	err = utils.WriteJSON(w, http.StatusOK, string(jwtBytes), "response")
 	if err != nil {
-		utils.ErrorJSON(w, errors.New("error sending signin response"))
+		utils.ErrorJSON(w, errors.New("error sending signin response"), http.StatusInternalServerError)
 		return
 	}
 }
