@@ -34,7 +34,7 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-func (s *Server) Signin(w http.ResponseWriter, r *http.Request) {
+func (s *Server) signin(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
