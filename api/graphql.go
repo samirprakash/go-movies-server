@@ -65,7 +65,6 @@ var fields = graphql.Fields{
 			if ok {
 				for _, searchedMovie := range movies {
 					if strings.Contains(searchedMovie.Title, search) {
-						log.Println(searchedMovie)
 						filteredList = append(filteredList, searchedMovie)
 					}
 				}
@@ -123,7 +122,7 @@ func (s *Server) moviesGraphQL(w http.ResponseWriter, r *http.Request) {
 
 	q, err := io.ReadAll(r.Body)
 	if err != nil {
-		utils.ErrorJSON(w, errors.New("gql: error reading requets body"))
+		utils.ErrorJSON(w, errors.New("gql: error reading request body"))
 		return
 	}
 
