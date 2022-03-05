@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/samirprakash/go-movies-server/internals/models"
 	"github.com/samirprakash/go-movies-server/internals/utils"
@@ -47,6 +48,29 @@ var fields = graphql.Fields{
 		Type:        graphql.NewList(movieType),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return movies, nil
+		},
+	},
+	"search": &graphql.Field{
+		Name:        "Search for a movie",
+		Description: "Search for a movie",
+		Type:        graphql.NewList(movieType),
+		Args: graphql.FieldConfigArgument{
+			"titleContains": &graphql.ArgumentConfig{
+				Type: graphql.String,
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			var filteredList []*models.Movie
+			search, ok := p.Args["titleContains"].(string)
+			if ok {
+				for _, searchedMovie := range movies {
+					if strings.Contains(searchedMovie.Title, search) {
+						log.Println(searchedMovie)
+						filteredList = append(filteredList, searchedMovie)
+					}
+				}
+			}
+			return filteredList, nil
 		},
 	},
 }
