@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -63,13 +62,11 @@ func (s *Server) checkToken(next http.Handler) http.Handler {
 			return
 		}
 
-		userID, err := strconv.ParseInt(claims.Subject, 10, 64)
+		_, err = strconv.ParseInt(claims.Subject, 10, 64)
 		if err != nil {
 			utils.ErrorJSON(w, errors.New("unauthoried - cannot parse user ID"), http.StatusForbidden)
 			return
 		}
-
-		log.Println("ID", userID)
 
 		next.ServeHTTP(w, r)
 	})
