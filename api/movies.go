@@ -187,10 +187,8 @@ func (s *Server) manageMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) deleteMovie(w http.ResponseWriter, r *http.Request) {
-	params := httprouter.ParamsFromContext(r.Context())
-
-	id, err := strconv.Atoi(params.ByName("id"))
+func (s *Server) deleteMovie(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	id, err := strconv.Atoi(ps.ByName("id"))
 	if err != nil {
 		s.logger.Println(errors.New("invalid movie id : "), err)
 		utils.ErrorJSON(w, err)

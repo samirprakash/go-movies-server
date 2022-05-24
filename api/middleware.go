@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/pascaldekloe/jwt"
 	"github.com/samirprakash/go-movies-server/internals/utils"
 )
@@ -21,8 +22,8 @@ func (s *Server) enableCORS(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Server) checkToken(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func (s *Server) checkToken(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		w.Header().Add("Vary", "Authorization")
 
 		authHeader := r.Header.Get("Authorization")
@@ -68,6 +69,6 @@ func (s *Server) checkToken(next http.Handler) http.Handler {
 			return
 		}
 
-		next.ServeHTTP(w, r)
-	})
+		next(w, r, ps)
+	}
 }
